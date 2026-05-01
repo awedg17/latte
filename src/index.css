@@ -1250,42 +1250,42 @@ a {
 
 /* ─── Responsive ─── */
 @media (min-width: 1024px) {
-  .latte-app {
-    max-width: 1000px; /* Lebar yang pas buat tampilan laptop */
-    margin: 20px auto;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    min-height: calc(100dvh - 40px);
-  }
-
-  .latte-dashboard-grid {
+  .latte-container {
     display: grid;
-    grid-template-columns: 1.5fr 1fr; /* Kiri lebih lebar dari kanan */
-    gap: 24px;
-    align-items: start;
+    grid-template-columns: 260px 1fr; /* Lebar Sidebar kiri tetap */
+    height: 100vh;
+    background: #000; /* Warna background gelap total kayak gambar */
   }
 
-  /* Buat stats row jadi vertikal di sidebar kalau mau lebih rapi */
-  .latte-dashboard-sidebar .latte-stats-row {
-    grid-template-columns: 1fr; 
-  }
-
-  .latte-dashboard-main, .latte-dashboard-sidebar {
+  .latte-sidebar-desktop {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    padding: 24px;
+    background: #121212; /* Warna sidebar */
+    border-right: 1px solid var(--border);
   }
 
+  .latte-content-wrapper {
+    overflow-y: auto;
+    padding: 30px;
+  }
+
+  /* Sembunyiin Navigasi Bawah di Laptop */
   .latte-nav {
-    max-width: 1000px; /* Sesuaikan navigasi dengan lebar baru */
-    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    display: none;
   }
 
-  .latte-fab {
-    right: calc(50% - 500px + 30px); /* Geser FAB biar nggak melayang jauh */
+  /* Dashboard Grid (Main & Right Sidebar) */
+  .latte-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px; /* Bagi area utama dan widget kanan */
+    gap: 30px;
   }
 }
 
+.latte-sidebar-desktop {
+  display: none; /* Sembunyiin di HP */
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1375,12 +1375,6 @@ input[type=number]::-webkit-inner-spin-button {
   /* already handled by gap: 14px */
 }
 
-/* ─── FAB tooltip on larger screens ─── */
-@media (min-width: 481px) {
-  .latte-fab {
-    right: calc(50% - 240px + 20px);
-  }
-}
 
 /* ─── Long press prevention on mobile ─── */
 .latte-tx-item,

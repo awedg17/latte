@@ -468,24 +468,33 @@ function applyTheme(theme: string) {
 function renderApp() {
   const shell = document.getElementById('app-shell');
   if (!shell) return;
-
-  const settings = getSettings();
-  applyTheme(settings.theme);
-
+  
   shell.innerHTML = `
-    <div class="latte-app">
-      ${renderHeader()}
-      <main class="latte-main" id="latte-main">
-        ${renderPage()}
-      </main>
-      ${renderNav()}
-      ${renderFAB()}
-      ${renderTransactionModal()}
-      ${renderAccountModal()}
-      ${renderBudgetModal()}
+    <div class="latte-container">
+      <!-- SIDEBAR (Cuma muncul di Desktop) -->
+      <aside class="latte-sidebar-desktop">
+        <div class="latte-sidebar__brand">☕ Latte</div>
+        <nav class="latte-sidebar__nav">
+          <button class="sidebar-item active" data-page="dashboard">🏠 Dashboard</button>
+          <button class="sidebar-item" data-page="transactions">📜 Transaksi</button>
+          <button class="sidebar-item" data-page="budget">🎯 Budget</button>
+          <button class="sidebar-item" data-page="accounts">💳 Akun</button>
+        </nav>
+        <div class="sidebar-footer">
+          <button id="sidebar-theme-toggle">🌙 Dark Mode</button>
+        </div>
+      </aside>
+
+      <!-- CONTENT AREA -->
+      <div class="latte-content-wrapper">
+        ${renderHeader()} <!-- Header HP tetep ada tapi nanti kita sesuaikan -->
+        <main class="latte-main">
+          ${renderPage()}
+        </main>
+        ${renderNav()} <!-- Navigasi Bawah (Cuma di HP) -->
+      </div>
     </div>
   `;
-
   attachEventListeners();
 }
 
