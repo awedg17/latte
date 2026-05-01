@@ -123,11 +123,11 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  width: 100%; /* Pastikan lebarnya fleksibel */
+  max-width: 480px; /* Default buat HP */
   margin: 0 auto;
+  position: relative;
   background: var(--bg);
-  /* Hapus max-width: 480px yang lama, ganti dengan ini: */
-  width: 100%;
-  max-width: 1200px; /* Lebar maksimal di laptop */
 }
 
 /* ─── Header ─── */
@@ -1251,9 +1251,11 @@ a {
 /* ─── Responsive ─── */
 @media (min-width: 1024px) {
   .latte-app {
-    max-width: 1000px; /* Perlebar aplikasi di laptop */
+    max-width: 1000px; /* Lebar yang pas buat tampilan laptop */
+    margin: 20px auto;
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
-    min-height: 100dvh;
+    min-height: calc(100dvh - 40px);
   }
 
   .latte-dashboard-grid {
@@ -1268,17 +1270,22 @@ a {
     grid-template-columns: 1fr; 
   }
 
+  .latte-dashboard-main, .latte-dashboard-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
   .latte-nav {
-    max-width: 1000px; /* Samakan dengan lebar aplikasi */
-    border-radius: 0;
+    max-width: 1000px; /* Sesuaikan navigasi dengan lebar baru */
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+
+  .latte-fab {
+    right: calc(50% - 500px + 30px); /* Geser FAB biar nggak melayang jauh */
   }
 }
 
-.latte-dashboard-main, .latte-dashboard-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

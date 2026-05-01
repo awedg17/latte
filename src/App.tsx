@@ -573,11 +573,11 @@ function renderDashboard() {
   return `
     <div class="latte-page">
       ${renderPeriodFilter()}
-      
-      <!-- Container Grid Desktop -->
+
+      <!-- Grid Wrapper: Ini kuncinya biar nggak kayak emulator -->
       <div class="latte-dashboard-grid">
         
-        <!-- Kolom Kiri: Fokus ke Saldo dan Transaksi -->
+        <!-- Kolom Kiri: Fokus Saldo & List Transaksi -->
         <div class="latte-dashboard-main">
           <div class="latte-balance-card">
             <div class="latte-balance-card__label">Total Saldo</div>
@@ -599,7 +599,7 @@ function renderDashboard() {
           </div>
         </div>
 
-        <!-- Kolom Kanan: Fokus ke Statistik dan Budget -->
+        <!-- Kolom Kanan: Fokus Pemasukan/Pengeluaran & Budget -->
         <div class="latte-dashboard-sidebar">
           <div class="latte-stats-row">
             <div class="latte-stat-card latte-stat-card--income">
@@ -615,7 +615,6 @@ function renderDashboard() {
           </div>
           
           ${renderBudgetSummaryCards(privacy)}
-          ${txs.length === 0 && getAccounts().length === 0 ? renderOnboarding() : ''}
         </div>
 
       </div>
