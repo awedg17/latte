@@ -468,33 +468,24 @@ function applyTheme(theme: string) {
 function renderApp() {
   const shell = document.getElementById('app-shell');
   if (!shell) return;
-  
-  shell.innerHTML = `
-    <div class="latte-container">
-      <!-- SIDEBAR (Cuma muncul di Desktop) -->
-      <aside class="latte-sidebar-desktop">
-        <div class="latte-sidebar__brand">☕ Latte</div>
-        <nav class="latte-sidebar__nav">
-          <button class="sidebar-item active" data-page="dashboard">🏠 Dashboard</button>
-          <button class="sidebar-item" data-page="transactions">📜 Transaksi</button>
-          <button class="sidebar-item" data-page="budget">🎯 Budget</button>
-          <button class="sidebar-item" data-page="accounts">💳 Akun</button>
-        </nav>
-        <div class="sidebar-footer">
-          <button id="sidebar-theme-toggle">🌙 Dark Mode</button>
-        </div>
-      </aside>
 
-      <!-- CONTENT AREA -->
-      <div class="latte-content-wrapper">
-        ${renderHeader()} <!-- Header HP tetep ada tapi nanti kita sesuaikan -->
-        <main class="latte-main">
-          ${renderPage()}
-        </main>
-        ${renderNav()} <!-- Navigasi Bawah (Cuma di HP) -->
-      </div>
+  const settings = getSettings();
+  applyTheme(settings.theme);
+
+  shell.innerHTML = `
+    <div class="latte-app">
+      ${renderHeader()}
+      <main class="latte-main" id="latte-main">
+        ${renderPage()}
+      </main>
+      ${renderNav()}
+      ${renderFAB()}
+      ${renderTransactionModal()}
+      ${renderAccountModal()}
+      ${renderBudgetModal()}
     </div>
   `;
+
   attachEventListeners();
 }
 
@@ -582,51 +573,37 @@ function renderDashboard() {
   return `
     <div class="latte-page">
       ${renderPeriodFilter()}
-
-      <!-- Grid Wrapper: Ini kuncinya biar nggak kayak emulator -->
-      <div class="latte-dashboard-grid">
-        
-        <!-- Kolom Kiri: Fokus Saldo & List Transaksi -->
-        <div class="latte-dashboard-main">
-          <div class="latte-balance-card">
-            <div class="latte-balance-card__label">Total Saldo</div>
-            <div class="latte-balance-card__amount">${getTotalBalance(privacy)}</div>
-            <div class="latte-balance-card__sub">
-              <span>${getAccounts().length} akun aktif</span>
-            </div>
-          </div>
-
-          <div class="latte-section">
-            <div class="latte-section__header">
-              <h3 class="latte-section__title">Transaksi Terakhir</h3>
-              <button class="latte-link" data-page="transactions">Lihat semua</button>
-            </div>
-            ${recentTxs.length === 0
-              ? `<div class="latte-empty"><span class="latte-empty__icon">📭</span><p>Belum ada transaksi</p></div>`
-              : recentTxs.map((t: any) => renderTransactionItem(t, privacy)).join('')
-            }
-          </div>
+      <div class="latte-balance-card">
+        <div class="latte-balance-card__label">Total Saldo</div>
+        <div class="latte-balance-card__amount">${getTotalBalance(privacy)}</div>
+        <div class="latte-balance-card__sub">
+          <span>${getAccounts().length} akun aktif</span>
         </div>
-
-        <!-- Kolom Kanan: Fokus Pemasukan/Pengeluaran & Budget -->
-        <div class="latte-dashboard-sidebar">
-          <div class="latte-stats-row">
-            <div class="latte-stat-card latte-stat-card--income">
-              <div class="latte-stat-card__icon">📈</div>
-              <div class="latte-stat-card__label">Pemasukan</div>
-              <div class="latte-stat-card__value">${formatIDR(income, privacy)}</div>
-            </div>
-            <div class="latte-stat-card latte-stat-card--expense">
-              <div class="latte-stat-card__icon">📉</div>
-              <div class="latte-stat-card__label">Pengeluaran</div>
-              <div class="latte-stat-card__value">${formatIDR(expense, privacy)}</div>
-            </div>
-          </div>
-          
-          ${renderBudgetSummaryCards(privacy)}
-        </div>
-
       </div>
+      <div class="latte-stats-row">
+        <div class="latte-stat-card latte-stat-card--income">
+          <div class="latte-stat-card__icon">📈</div>
+          <div class="latte-stat-card__label">Pemasukan</div>
+          <div class="latte-stat-card__value">${formatIDR(income, privacy)}</div>
+        </div>
+        <div class="latte-stat-card latte-stat-card--expense">
+          <div class="latte-stat-card__icon">📉</div>
+          <div class="latte-stat-card__label">Pengeluaran</div>
+          <div class="latte-stat-card__value">${formatIDR(expense, privacy)}</div>
+        </div>
+      </div>
+      ${renderBudgetSummaryCards(privacy)}
+      <div class="latte-section">
+        <div class="latte-section__header">
+          <h3 class="latte-section__title">Transaksi Terakhir</h3>
+          <button class="latte-link" data-page="transactions">Lihat semua</button>
+        </div>
+        ${recentTxs.length === 0
+          ? `<div class="latte-empty"><span class="latte-empty__icon">📭</span><p>Belum ada transaksi</p><p class="latte-empty__sub">Tap tombol + untuk mulai mencatat</p></div>`
+          : recentTxs.map((t: any) => renderTransactionItem(t, privacy)).join('')
+        }
+      </div>
+      ${txs.length === 0 && getAccounts().length === 0 ? renderOnboarding() : ''}
     </div>
   `;
 }
