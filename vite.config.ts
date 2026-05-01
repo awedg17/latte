@@ -10,10 +10,16 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
+  // base ini WAJIB supaya asset lu kebaca di GitHub Pages
+  base: '/latte/', 
   plugins: [react(), tailwindcss(), viteSingleFile()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
   },
+  build: {
+    // Memastikan output build bersih
+    emptyOutDir: true,
+  }
 });

@@ -123,10 +123,11 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  max-width: 480px;
   margin: 0 auto;
-  position: relative;
   background: var(--bg);
+  /* Hapus max-width: 480px yang lama, ganti dengan ini: */
+  width: 100%;
+  max-width: 1200px; /* Lebar maksimal di laptop */
 }
 
 /* ─── Header ─── */
@@ -960,8 +961,8 @@ a {
 }
 
 @media (max-width: 480px) {
-  .latte-fab {
-    right: 20px;
+  .latte-app {
+    max-width: 100%;
   }
 }
 
@@ -1248,15 +1249,35 @@ a {
 }
 
 /* ─── Responsive ─── */
-@media (min-width: 481px) {
+@media (min-width: 1024px) {
   .latte-app {
+    max-width: 1000px; /* Perlebar aplikasi di laptop */
     box-shadow: var(--shadow-lg);
     min-height: 100dvh;
   }
 
+  .latte-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* Kiri lebih lebar dari kanan */
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* Buat stats row jadi vertikal di sidebar kalau mau lebih rapi */
+  .latte-dashboard-sidebar .latte-stats-row {
+    grid-template-columns: 1fr; 
+  }
+
   .latte-nav {
+    max-width: 1000px; /* Samakan dengan lebar aplikasi */
     border-radius: 0;
   }
+}
+
+.latte-dashboard-main, .latte-dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 @media (prefers-reduced-motion: reduce) {

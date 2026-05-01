@@ -573,37 +573,52 @@ function renderDashboard() {
   return `
     <div class="latte-page">
       ${renderPeriodFilter()}
-      <div class="latte-balance-card">
-        <div class="latte-balance-card__label">Total Saldo</div>
-        <div class="latte-balance-card__amount">${getTotalBalance(privacy)}</div>
-        <div class="latte-balance-card__sub">
-          <span>${getAccounts().length} akun aktif</span>
+      
+      <!-- Container Grid Desktop -->
+      <div class="latte-dashboard-grid">
+        
+        <!-- Kolom Kiri: Fokus ke Saldo dan Transaksi -->
+        <div class="latte-dashboard-main">
+          <div class="latte-balance-card">
+            <div class="latte-balance-card__label">Total Saldo</div>
+            <div class="latte-balance-card__amount">${getTotalBalance(privacy)}</div>
+            <div class="latte-balance-card__sub">
+              <span>${getAccounts().length} akun aktif</span>
+            </div>
+          </div>
+
+          <div class="latte-section">
+            <div class="latte-section__header">
+              <h3 class="latte-section__title">Transaksi Terakhir</h3>
+              <button class="latte-link" data-page="transactions">Lihat semua</button>
+            </div>
+            ${recentTxs.length === 0
+              ? `<div class="latte-empty"><span class="latte-empty__icon">📭</span><p>Belum ada transaksi</p></div>`
+              : recentTxs.map((t: any) => renderTransactionItem(t, privacy)).join('')
+            }
+          </div>
         </div>
+
+        <!-- Kolom Kanan: Fokus ke Statistik dan Budget -->
+        <div class="latte-dashboard-sidebar">
+          <div class="latte-stats-row">
+            <div class="latte-stat-card latte-stat-card--income">
+              <div class="latte-stat-card__icon">📈</div>
+              <div class="latte-stat-card__label">Pemasukan</div>
+              <div class="latte-stat-card__value">${formatIDR(income, privacy)}</div>
+            </div>
+            <div class="latte-stat-card latte-stat-card--expense">
+              <div class="latte-stat-card__icon">📉</div>
+              <div class="latte-stat-card__label">Pengeluaran</div>
+              <div class="latte-stat-card__value">${formatIDR(expense, privacy)}</div>
+            </div>
+          </div>
+          
+          ${renderBudgetSummaryCards(privacy)}
+          ${txs.length === 0 && getAccounts().length === 0 ? renderOnboarding() : ''}
+        </div>
+
       </div>
-      <div class="latte-stats-row">
-        <div class="latte-stat-card latte-stat-card--income">
-          <div class="latte-stat-card__icon">📈</div>
-          <div class="latte-stat-card__label">Pemasukan</div>
-          <div class="latte-stat-card__value">${formatIDR(income, privacy)}</div>
-        </div>
-        <div class="latte-stat-card latte-stat-card--expense">
-          <div class="latte-stat-card__icon">📉</div>
-          <div class="latte-stat-card__label">Pengeluaran</div>
-          <div class="latte-stat-card__value">${formatIDR(expense, privacy)}</div>
-        </div>
-      </div>
-      ${renderBudgetSummaryCards(privacy)}
-      <div class="latte-section">
-        <div class="latte-section__header">
-          <h3 class="latte-section__title">Transaksi Terakhir</h3>
-          <button class="latte-link" data-page="transactions">Lihat semua</button>
-        </div>
-        ${recentTxs.length === 0
-          ? `<div class="latte-empty"><span class="latte-empty__icon">📭</span><p>Belum ada transaksi</p><p class="latte-empty__sub">Tap tombol + untuk mulai mencatat</p></div>`
-          : recentTxs.map((t: any) => renderTransactionItem(t, privacy)).join('')
-        }
-      </div>
-      ${txs.length === 0 && getAccounts().length === 0 ? renderOnboarding() : ''}
     </div>
   `;
 }
