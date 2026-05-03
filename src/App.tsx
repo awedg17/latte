@@ -1,4 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // Tambahkan useState di sini
+
+// Taruh di luar fungsi LatteApp agar bisa diakses secara global oleh render engine kamu
+let keypadBuffer = ""; 
+
+// Ekspos fungsi ke window supaya onclick="handleKeypadPress()" di HTML string bisa jalan
+(window as any).handleKeypadPress = (val: string) => {
+  const amtInput = document.getElementById('tx-amount') as HTMLInputElement;
+  
+  if (val === 'DEL') {
+    keypadBuffer = keypadBuffer.slice(0, -1);
+  } else if (val === '.') {
+    if (!keypadBuffer.includes('.')) keypadBuffer += '.';
+  } else {
+    keypadBuffer += val;
+  }
+  
+  if (amtInput) amtInput.value = keypadBuffer;
+};
 
 export default function App() {
   useEffect(() => {
@@ -16,10 +34,26 @@ export default function App() {
 }
 
 function LatteApp() {
+  const [keypadInput, setKeypadInput] = useState("");
+  const [txNote, setTxNote] = useState("");
   useEffect(() => {
     initApp();
   }, []);
   return <div id="app-shell"></div>;
+}
+
+function handleKeypadPress(val: string) {
+  if (val === 'DEL') {
+    setKeypadInput(prev => prev.slice(0, -1));
+  } else if (val === '.') {
+    if (!keypadInput.includes('.')) setKeypadInput(prev => prev + '.');
+  } else {
+    // Untuk angka 0-9 dan "000"
+    setKeypadInput(prev => prev + val);
+  }
+  // Update otomatis ke input asli
+  const amtInput = document.getElementById('tx-amount') as HTMLInputElement;
+  if (amtInput) amtInput.value = keypadInput + (val !== 'DEL' && val !== '.' ? val : "");
 }
 
 // ─────────────────────────────────────────────
@@ -853,7 +887,7 @@ function renderFinanceSummary() {
 // MODALS
 // ─────────────────────────────────────────────
 function renderTransactionModal() {
-  const accounts = getAccounts();
+  const accounts = getAccounts(); //
   return `
     <div class="latte-modal-overlay" id="modal-transaction" aria-hidden="true">
       <div class="latte-modal">
@@ -862,51 +896,30 @@ function renderTransactionModal() {
           <button class="latte-modal__close" data-close="modal-transaction">✕</button>
         </div>
         <div class="latte-modal__body">
-          <div class="latte-tx-tabs">
-            <button class="latte-tx-tab latte-tx-tab--active" data-type="expense">Pengeluaran</button>
-            <button class="latte-tx-tab" data-type="income">Pemasukan</button>
-            <button class="latte-tx-tab" data-type="transfer">Transfer</button>
-          </div>
-          <form id="form-transaction" novalidate>
-            <div class="latte-form-group" id="fg-from-account">
-              <label class="latte-label" id="label-from-account">Dari Akun</label>
-              <select class="latte-select" id="tx-from-account" required>
-                <option value="">Pilih akun...</option>
-                ${accounts.map((a: any) => `<option value="${a.id}">${a.name} (${formatIDR(a.balance)})</option>`).join('')}
-              </select>
-            </div>
-            <div class="latte-form-group" id="fg-to-account" style="display:none">
-              <label class="latte-label">Ke Akun</label>
-              <select class="latte-select" id="tx-to-account">
-                <option value="">Pilih akun tujuan...</option>
-                ${accounts.map((a: any) => `<option value="${a.id}">${a.name}</option>`).join('')}
-              </select>
-            </div>
-            <div class="latte-form-group" id="fg-category">
-              <label class="latte-label">Kategori</label>
-              <select class="latte-select" id="tx-category" required>
-                ${CATEGORIES.expense.map(c => `<option value="${c}">${c}</option>`).join('')}
-              </select>
-            </div>
+          <form id="form-transaction">
             <div class="latte-form-group">
-              <label class="latte-label">Jumlah</label>
-              <div class="latte-input-group">
-                <span class="latte-input-prefix">Rp</span>
-                <input class="latte-input latte-input--prefixed" type="text" id="tx-amount" placeholder="Contoh: 50000 atau 1.5jt" required autocomplete="off">
-              </div>
-              <div class="latte-hint">Bisa: 50000, 50k, 1.5jt, 2000000</div>
+               <label class="latte-label">Jumlah</label>
+               <input class="latte-input" type="text" id="tx-amount" readonly placeholder="0">
             </div>
-            <div class="latte-form-group" id="fg-fee" style="display:none">
-              <label class="latte-label">Biaya Admin (opsional)</label>
-              <div class="latte-input-group">
-                <span class="latte-input-prefix">Rp</span>
-                <input class="latte-input latte-input--prefixed" type="text" id="tx-fee" placeholder="Contoh: 6500" autocomplete="off">
-              </div>
+
+            <!-- Numpad Grid -->
+            <div class="latte-keypad-grid">
+              ${['1','2','3','4','5','6','7','8','9','.', '0', '000'].map(num => 
+                `<button type="button" class="key-btn" onclick="handleKeypadPress('${num}')">${num}</button>`
+              ).join('')}
+              <button type="button" class="key-btn key-btn--del" onclick="handleKeypadPress('DEL')">⌫</button>
             </div>
+
             <div class="latte-form-group">
-              <label class="latte-label">Tanggal</label>
-              <input class="latte-input" type="date" id="tx-date" required>
+               <label class="latte-label">Note</label>
+               <input class="latte-input" type="text" id="tx-note" placeholder="Catatan transaksi...">
             </div>
+
+            <div class="latte-form-group">
+               <label class="latte-label">Tanggal</label>
+               <input class="latte-input" type="date" id="tx-date" required>
+            </div>
+            
             <button type="submit" class="latte-btn latte-btn--primary latte-btn--full">Simpan Transaksi</button>
           </form>
         </div>
@@ -933,7 +946,7 @@ function renderAccountModal() {
               <label class="latte-label">Saldo Awal</label>
               <div class="latte-input-group">
                 <span class="latte-input-prefix">Rp</span>
-                <input class="latte-input latte-input--prefixed" type="text" id="acc-balance" placeholder="Contoh: 1500000 atau 1.5jt" autocomplete="off">
+                <input class="latte-input latte-input--prefixed" type="text" id="acc-balance" inputmode="decimal" placeholder="Contoh: 1500000 atau 1.5jt" autocomplete="off">
               </div>
             </div>
             <button type="submit" class="latte-btn latte-btn--primary latte-btn--full">Tambah Akun</button>
@@ -964,7 +977,7 @@ function renderBudgetModal() {
               <label class="latte-label">Limit per Bulan</label>
               <div class="latte-input-group">
                 <span class="latte-input-prefix">Rp</span>
-                <input class="latte-input latte-input--prefixed" type="text" id="budget-limit" placeholder="Contoh: 500000 atau 500k" required autocomplete="off">
+                <input class="latte-input latte-input--prefixed" type="text" id="budget-limit" inputmode="decimal" placeholder="Contoh: 500000 atau 500k" required autocomplete="off">
               </div>
             </div>
             <button type="submit" class="latte-btn latte-btn--primary latte-btn--full">Simpan Budget</button>
@@ -988,6 +1001,8 @@ function openModal(id: string) {
 }
 
 function closeModal(id: string) {
+  if (id === 'modal-transaction') keypadBuffer = ""; // Reset buffer
+  // ... sisa kode closeModal kamu[cite: 1]
   const modal = document.getElementById(id);
   if (modal) {
     modal.setAttribute('aria-hidden', 'true');

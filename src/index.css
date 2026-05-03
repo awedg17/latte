@@ -928,6 +928,38 @@ a {
   transform: scale(0.9);
 }
 
+.latte-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  background: var(--bg-input);
+  padding: 10px;
+  border-radius: var(--radius-lg);
+}
+
+.key-btn {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: active 0.1s;
+}
+
+.key-btn:active {
+  transform: scale(0.95);
+  background: var(--yellow);
+  color: var(--charcoal);
+}
+
+.key-btn--del {
+  background: var(--expense);
+  color: white;
+}
+
 /* ─── Floating Action Button ─── */
 .latte-fab {
   position: fixed;
